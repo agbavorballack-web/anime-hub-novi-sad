@@ -119,6 +119,12 @@ export default function Home() {
   // Load the soonest upcoming event — prefer admin-created, fall back to default
   const [nextEvent, setNextEvent] = useState(DEFAULT_EVENT)
   const [eventCount, setEventCount] = useState(1)
+  const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920')
+
+  useEffect(() => {
+    const savedHeroImage = localStorage.getItem('setting_hero_image')
+    if (savedHeroImage) setHeroImage(savedHeroImage)
+  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('admin_events')
@@ -149,7 +155,7 @@ export default function Home() {
       {/* ── Hero ── */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/20 to-blue-900/20" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920')] bg-cover bg-center opacity-20" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${heroImage})` }} />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

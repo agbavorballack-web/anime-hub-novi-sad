@@ -82,6 +82,7 @@ export default function AdminDashboard() {
   const [accountNumber, setAccountNumber] = useState('')
   const [settingsSaved, setSettingsSaved] = useState(false)
   const [gaId, setGaId] = useState('')
+  const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920')
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('')
@@ -135,6 +136,9 @@ export default function AdminDashboard() {
 
     const savedGaId = localStorage.getItem('setting_ga_id')
     if (savedGaId) setGaId(savedGaId)
+
+    const savedHeroImage = localStorage.getItem('setting_hero_image')
+    if (savedHeroImage) setHeroImage(savedHeroImage)
 
     const savedPurchases = localStorage.getItem('ticket_purchases')
     if (savedPurchases) setTicketPurchases(JSON.parse(savedPurchases))
@@ -203,6 +207,7 @@ export default function AdminDashboard() {
     localStorage.setItem('setting_accountHolder', accountHolder)
     localStorage.setItem('setting_accountNumber', accountNumber)
     localStorage.setItem('setting_ga_id', gaId)
+    localStorage.setItem('setting_hero_image', heroImage)
     setSettingsSaved(true)
     setTimeout(() => setSettingsSaved(false), 3000)
   }
@@ -771,6 +776,17 @@ export default function AdminDashboard() {
                         placeholder="+381 21 XXX XXX"
                       />
                       <p className="text-xs text-gray-500 mt-1">This number will be shown in the footer contact section.</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Homepage Hero Image URL</label>
+                      <input
+                        type="text"
+                        value={heroImage}
+                        onChange={(e) => setHeroImage(e.target.value)}
+                        className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg focus:ring-2 focus:ring-neon-purple text-white"
+                        placeholder="https://images.unsplash.com/..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Paste any image URL here to change the background image on the homepage hero section. Get free images from unsplash.com.</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
