@@ -9,6 +9,7 @@ import {
   X, 
   Home, 
   Calendar, 
+  Megaphone,
   Award,
   Globe,
   LayoutDashboard
@@ -30,6 +31,7 @@ export default function Navbar() {
   const navItems = [
     { href: '/', icon: Home, labelKey: 'nav.home' },
     { href: '/events', icon: Calendar, labelKey: 'nav.events' },
+    { href: '/announcements', icon: Megaphone, labelKey: 'nav.announcements' },
     { href: '/rewards', icon: Award, labelKey: 'nav.rewards' },
     { href: '/about', icon: Globe, labelKey: 'nav.about' },
     { href: '/admin', icon: LayoutDashboard, labelKey: 'nav.admin' },

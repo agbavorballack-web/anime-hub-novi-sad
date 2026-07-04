@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getSetting } from '@/lib/supabase'
+import { getSetting, getAnnouncements, Announcement } from '@/lib/supabase'
 import { 
   Sparkles, 
   Calendar, 
@@ -13,7 +13,9 @@ import {
   Ticket,
   Clock,
   MapPin,
-  Heart
+  Heart,
+  Megaphone,
+  X
 } from 'lucide-react'
 
 function LikeButton({ eventId }: { eventId: number }) {
@@ -121,11 +123,22 @@ export default function Home() {
   const [nextEvent, setNextEvent] = useState(DEFAULT_EVENT)
   const [eventCount, setEventCount] = useState(1)
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920')
+  const [latestAnnouncement, setLatestAnnouncement] = useState<Announcement | null>(null)
+  const [showBanner, setShowBanner] = useState(true)
 
   useEffect(() => {
     getSetting('hero_image').then(img => {
       if (img) setHeroImage(img)
     })
+  }, [])
+
+  useEffect(() => {
+    async function loadAnnouncement() {
+      const announcements = await getAnnouncements()
+      const published = announcements.filter(a => a.published)
+      if (published.length > 0) setLatestAnnouncement(published[0])
+    }
+    loadAnnouncement()
   }, [])
 
   useEffect(() => {
@@ -221,6 +234,31 @@ export default function Home() {
           transition={{ duration: 5, repeat: Infinity, delay: 1 }}
         />
       </section>
+
+      {/* ── Latest Announcement Banner ── */}
+      {latestAnnouncement && showBanner && (
+        <section className="py-4 px-4 bg-gradient-to-r from-neon-purple/20 to-neon-pink/20 border-y border-neon-purple/30">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-start gap-4">
+              <Megaphone className="w-6 h-6 text-neon-purple flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-bold text-white mb-1">{latestAnnouncement.title}</h3>
+                <p className="text-gray-300 text-sm line-clamp-2">{latestAnnouncement.content}</p>
+              </div>
+              <Link href="/announcements" className="btn-primary text-sm whitespace-nowrap px-4 py-2">
+                Read More
+              </Link>
+              <button
+                onClick={() => setShowBanner(false)}
+                className="text-gray-400 hover:text-white"
+                aria-label="Close announcement"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Countdown Timer ── */}
       <section className="py-16 px-4 bg-dark-card/80 border-y border-dark-border">
