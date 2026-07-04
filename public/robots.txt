@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://animehub.rs/sitemap.xml
+Sitemap: https://animehubns.com/sitemap.xml
