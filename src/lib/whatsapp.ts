@@ -17,7 +17,7 @@ ${announcement.content}
 📅 ${announcement.date}
 
 ---
-🔗 Join our community: https://animehub.rs
+🔗 Join our community: https://animehubns.com
 💬 WhatsApp Group: https://chat.whatsapp.com/KqoazdpQWWQGkxMBkBLR56
   `.trim()
 

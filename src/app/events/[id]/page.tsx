@@ -44,7 +44,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
   const [bankName, setBankName] = useState('')
   const [accountHolder, setAccountHolder] = useState('')
   const [accountNumber, setAccountNumber] = useState('')
-  const [adminEmail, setAdminEmail] = useState('info@animehub.rs')
+  const [adminEmail, setAdminEmail] = useState('animehubns@gmail.com')
 
   useEffect(() => {
     const b = localStorage.getItem('setting_bankName')

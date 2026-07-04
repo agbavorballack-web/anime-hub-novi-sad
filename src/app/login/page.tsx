@@ -77,7 +77,7 @@ export default function LoginPage() {
                 <input type="checkbox" className="w-4 h-4 rounded border-dark-border bg-dark-bg text-neon-purple focus:ring-neon-purple" />
                 <span className="ml-2 text-sm text-gray-400">Remember me</span>
               </label>
-              <a href="mailto:info@animehub.rs?subject=Password Reset Request" className="text-sm text-neon-blue hover:text-neon-pink">
+              <a href="mailto:animehubns@gmail.com?subject=Password Reset Request" className="text-sm text-neon-blue hover:text-neon-pink">
                 Forgot password?
               </a>
             </div>

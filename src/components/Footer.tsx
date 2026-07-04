@@ -18,8 +18,8 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 )
 
 export default function Footer() {
-  const [email, setEmail] = useState('info@animehub.rs')
-  const [phone, setPhone] = useState('+381 21 XXX XXX')
+  const [email, setEmail] = useState('animehubns@gmail.com')
+  const [phone, setPhone] = useState('+381 65 314 7840')
   const [whatsappLink, setWhatsappLink] = useState('https://chat.whatsapp.com/KqoazdpQWWQGkxMBkBLR56')
   const [instagramLink, setInstagramLink] = useState('https://instagram.com')
 

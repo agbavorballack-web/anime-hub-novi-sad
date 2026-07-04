@@ -12,11 +12,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Anime Hub Novi Sad - Building the Largest Anime Community in Serbia',
   description: 'Join the growing anime community in Serbia! Attend events, get tickets, and connect with fellow anime fans in Novi Sad.',
-  metadataBase: new URL('https://animehub.rs'),
+  metadataBase: new URL('https://animehubns.com'),
   openGraph: {
     title: 'Anime Hub Novi Sad',
     description: 'The largest anime community in Serbia. Events, tickets, and more in Novi Sad.',
-    url: 'https://animehub.rs',
+    url: 'https://animehubns.com',
     siteName: 'Anime Hub Novi Sad',
     locale: 'en_US',
     type: 'website',
