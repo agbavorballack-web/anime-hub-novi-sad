@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { getSetting, getAnnouncements, Announcement } from '@/lib/supabase'
 import { 
   Sparkles, 
@@ -119,6 +120,8 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 export default function Home() {
+  const { language, t } = useLanguage()
+
   // Load the soonest upcoming event — prefer admin-created, fall back to default
   const [nextEvent, setNextEvent] = useState(DEFAULT_EVENT)
   const [eventCount, setEventCount] = useState(1)
@@ -169,10 +172,10 @@ export default function Home() {
   const countdown = useCountdown(nextEvent.date)
 
   const stats = [
-    { icon: Users, label: "Community Members", value: "Growing" },
-    { icon: Calendar, label: "Upcoming Events", value: `${eventCount} Planned` },
-    { icon: Sparkles, label: "Founded", value: "2026" },
-    { icon: Ticket, label: "Tickets Available", value: "Limited" }
+    { icon: Users, label: t('home.statCommunity'), value: t('home.statCommunityValue') },
+    { icon: Calendar, label: t('home.statEvents'), value: `${eventCount} ${t('home.statEventsValue')}` },
+    { icon: Sparkles, label: t('home.statFounded'), value: "2026" },
+    { icon: Ticket, label: t('home.statTickets'), value: t('home.statTicketsValue') }
   ]
 
   return (
@@ -203,7 +206,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Building the Largest Anime Community in Serbia — Join Us From the Start!
+            {t('home.heroSubtitle')}
           </motion.p>
           <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -213,11 +216,11 @@ export default function Home() {
           >
             <Link href="/events" className="btn-primary">
               <Zap className="inline mr-2" />
-              Explore Events
+              {t('home.exploreEvents')}
             </Link>
             <Link href={`/events/${nextEvent.id}`} className="btn-secondary">
               <Ticket className="inline mr-2" />
-              Get Tickets
+              {t('home.getTickets')}
             </Link>
           </motion.div>
         </motion.div>
@@ -246,7 +249,7 @@ export default function Home() {
                 <p className="text-gray-300 text-sm line-clamp-2">{latestAnnouncement.content}</p>
               </div>
               <Link href="/announcements" className="btn-primary text-sm whitespace-nowrap px-4 py-2">
-                Read More
+                {t('home.readMore')}
               </Link>
               <button
                 onClick={() => setShowBanner(false)}
@@ -268,12 +271,12 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-neon-pink uppercase tracking-widest text-sm font-semibold mb-2">Next Event</p>
+            <p className="text-neon-pink uppercase tracking-widest text-sm font-semibold mb-2">{t('home.nextEvent')}</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-2">{nextEvent.title}</h2>
             <div className="flex items-center justify-center gap-6 text-gray-400 text-sm mb-8">
               <span className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                {new Date(nextEvent.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                {new Date(nextEvent.date).toLocaleDateString(language === 'sr' ? 'sr-RS' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
@@ -286,23 +289,23 @@ export default function Home() {
             </div>
 
             {countdown.expired ? (
-              <p className="text-2xl font-bold text-neon-purple">Event has started! 🎉</p>
+              <p className="text-2xl font-bold text-neon-purple">{t('home.eventStarted')}</p>
             ) : (
               <div className="flex items-center justify-center gap-4 md:gap-6">
-                <CountdownUnit value={countdown.days} label="Days" />
+                <CountdownUnit value={countdown.days} label={t('home.days')} />
                 <span className="text-3xl font-bold text-neon-purple pb-6">:</span>
-                <CountdownUnit value={countdown.hours} label="Hours" />
+                <CountdownUnit value={countdown.hours} label={t('home.hours')} />
                 <span className="text-3xl font-bold text-neon-purple pb-6">:</span>
-                <CountdownUnit value={countdown.minutes} label="Minutes" />
+                <CountdownUnit value={countdown.minutes} label={t('home.minutes')} />
                 <span className="text-3xl font-bold text-neon-purple pb-6">:</span>
-                <CountdownUnit value={countdown.seconds} label="Seconds" />
+                <CountdownUnit value={countdown.seconds} label={t('home.seconds')} />
               </div>
             )}
 
             <div className="mt-8">
               <Link href={`/events/${nextEvent.id}`} className="btn-primary inline-flex items-center gap-2">
                 <Ticket className="w-5 h-5" />
-                Secure Your Spot — {nextEvent.price} RSD
+                {t('home.secureSpot')} — {nextEvent.price} RSD
               </Link>
             </div>
           </motion.div>
@@ -318,11 +321,9 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl font-bold mb-4 neon-text">Our Mission</h2>
+            <h2 className="text-4xl font-bold mb-4 neon-text">{t('home.mission')}</h2>
             <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-              We're just getting started! Join us in building the largest anime community in Serbia, right here in Novi Sad.
-              We're bringing together anime fans to share our passion, discover new series, and create lasting friendships.
-              Be part of something amazing from the very beginning!
+              {t('home.missionText')}
             </p>
           </motion.div>
 
@@ -354,9 +355,9 @@ export default function Home() {
             viewport={{ once: true }}
             className="flex justify-between items-center mb-12"
           >
-            <h2 className="text-4xl font-bold neon-text">Upcoming Events</h2>
+            <h2 className="text-4xl font-bold neon-text">{t('home.upcomingEvents')}</h2>
             <Link href="/events" className="btn-secondary flex items-center">
-              View All
+              {t('home.viewAll')}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </motion.div>
@@ -374,7 +375,7 @@ export default function Home() {
                 <div className="space-y-2 text-gray-400 mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    {new Date(nextEvent.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(nextEvent.date).toLocaleDateString(language === 'sr' ? 'sr-RS' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <div className="flex items-center gap-2">
                     <Ticket className="w-4 h-4" />
@@ -384,7 +385,7 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <LikeButton eventId={nextEvent.id} />
                   <Link href={`/events/${nextEvent.id}`} className="btn-primary flex-1 text-center">
-                    Get Tickets
+                    {t('home.getTickets')}
                   </Link>
                 </div>
               </div>
@@ -403,9 +404,9 @@ export default function Home() {
             className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-neon-purple/30"
           >
             <Ticket className="w-16 h-16 mx-auto mb-6 text-neon-pink" />
-            <h2 className="text-4xl font-bold mb-4">Stay in the Loop</h2>
+            <h2 className="text-4xl font-bold mb-4">{t('home.stayInLoop')}</h2>
             <p className="text-gray-300 text-lg mb-8">
-              Join our WhatsApp group to get instant updates on new events, location announcements, and ticket drops — before anyone else.
+              {t('home.stayInLoopText')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
@@ -417,11 +418,11 @@ export default function Home() {
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                 </svg>
-                Join WhatsApp Group
+                {t('home.joinWhatsapp')}
               </a>
               <Link href="/events" className="btn-secondary inline-flex items-center justify-center gap-2">
                 <Calendar className="w-5 h-5" />
-                Browse Events
+                {t('home.browseEvents')}
               </Link>
             </div>
           </motion.div>
