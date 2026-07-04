@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { verifyAdminPassword } from '@/lib/supabase'
 import { Lock, Shield, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
 export default function AdminLoginPage() {
@@ -12,27 +13,24 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
-    setTimeout(() => {
-      // Read saved password from localStorage, fall back to default
-      const ADMIN_PASSWORD = localStorage.getItem('admin_password') || 'animehub2026'
+    const isValid = await verifyAdminPassword(password)
 
-      if (password === ADMIN_PASSWORD) {
-        // Set cookie first, then do a full page navigation so middleware sees it
-        document.cookie = 'admin_session=anime_hub_admin_2026; path=/; max-age=86400; SameSite=Lax'
-        // Small extra delay to ensure cookie is committed before navigation
-        setTimeout(() => {
-          window.location.href = '/admin'
-        }, 100)
-      } else {
-        setError('Incorrect password. Please try again.')
-        setLoading(false)
-      }
-    }, 500)
+    if (isValid) {
+      // Set cookie first, then do a full page navigation so middleware sees it
+      document.cookie = 'admin_session=anime_hub_admin_2026; path=/; max-age=86400; SameSite=Lax'
+      // Small extra delay to ensure cookie is committed before navigation
+      setTimeout(() => {
+        window.location.href = '/admin'
+      }, 100)
+    } else {
+      setError('Incorrect password. Please try again.')
+      setLoading(false)
+    }
   }
 
   return (

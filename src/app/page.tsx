@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { getSetting } from '@/lib/supabase'
 import { 
   Sparkles, 
   Calendar, 
@@ -122,8 +123,9 @@ export default function Home() {
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920')
 
   useEffect(() => {
-    const savedHeroImage = localStorage.getItem('setting_hero_image')
-    if (savedHeroImage) setHeroImage(savedHeroImage)
+    getSetting('hero_image').then(img => {
+      if (img) setHeroImage(img)
+    })
   }, [])
 
   useEffect(() => {

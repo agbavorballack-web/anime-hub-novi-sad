@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getSetting } from '@/lib/supabase'
 import { 
   Calendar, 
   Clock, 
@@ -40,21 +41,26 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
   const [sending, setSending] = useState(false)
   const [emailError, setEmailError] = useState('')
 
-  // Bank + admin email from settings
+  // Bank + admin email from Supabase settings
   const [bankName, setBankName] = useState('')
   const [accountHolder, setAccountHolder] = useState('')
   const [accountNumber, setAccountNumber] = useState('')
   const [adminEmail, setAdminEmail] = useState('animehubns@gmail.com')
 
   useEffect(() => {
-    const b = localStorage.getItem('setting_bankName')
-    const h = localStorage.getItem('setting_accountHolder')
-    const n = localStorage.getItem('setting_accountNumber')
-    const ae = localStorage.getItem('setting_email')
-    if (b) setBankName(b)
-    if (h) setAccountHolder(h)
-    if (n) setAccountNumber(n)
-    if (ae) setAdminEmail(ae)
+    async function loadSettings() {
+      const [b, h, n, ae] = await Promise.all([
+        getSetting('bank_name'),
+        getSetting('account_holder'),
+        getSetting('account_number'),
+        getSetting('site_email'),
+      ])
+      if (b) setBankName(b)
+      if (h) setAccountHolder(h)
+      if (n) setAccountNumber(n)
+      if (ae) setAdminEmail(ae)
+    }
+    loadSettings()
   }, [])
 
   const event = {

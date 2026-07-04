@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { getAllSettings } from '@/lib/supabase'
 import { 
   Instagram, 
   Mail, 
@@ -23,19 +24,16 @@ export default function Footer() {
   const [whatsappLink, setWhatsappLink] = useState('https://chat.whatsapp.com/KqoazdpQWWQGkxMBkBLR56')
   const [instagramLink, setInstagramLink] = useState('https://instagram.com')
 
-  // Load saved settings from localStorage (set in Admin Settings)
+  // Load saved settings from Supabase (set in Admin Settings)
   useEffect(() => {
-    const savedEmail = localStorage.getItem('setting_email')
-    if (savedEmail) setEmail(savedEmail)
-
-    const savedPhone = localStorage.getItem('setting_phone')
-    if (savedPhone) setPhone(savedPhone)
-
-    const savedWhatsapp = localStorage.getItem('setting_whatsapp')
-    if (savedWhatsapp) setWhatsappLink(savedWhatsapp)
-
-    const savedInstagram = localStorage.getItem('setting_instagram')
-    if (savedInstagram) setInstagramLink(savedInstagram)
+    async function loadSettings() {
+      const settings = await getAllSettings()
+      if (settings['site_email']) setEmail(settings['site_email'])
+      if (settings['site_phone']) setPhone(settings['site_phone'])
+      if (settings['whatsapp_link']) setWhatsappLink(settings['whatsapp_link'])
+      if (settings['instagram_link']) setInstagramLink(settings['instagram_link'])
+    }
+    loadSettings()
   }, [])
 
   const quickLinks = [

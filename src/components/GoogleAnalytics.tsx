@@ -2,10 +2,11 @@
 
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
+import { getSetting } from '@/lib/supabase'
 
 /**
  * Google Analytics component.
- * The Measurement ID is read from localStorage (set via Admin → Settings)
+ * The Measurement ID is read from Supabase (set via Admin → Settings)
  * so you never need to touch code to update it.
  *
  * To get your Measurement ID:
@@ -18,10 +19,11 @@ export default function GoogleAnalytics() {
   const [measurementId, setMeasurementId] = useState<string | null>(null)
 
   useEffect(() => {
-    const saved = localStorage.getItem('setting_ga_id')
-    if (saved && saved.startsWith('G-')) {
-      setMeasurementId(saved)
-    }
+    getSetting('ga_id').then(saved => {
+      if (saved && saved.startsWith('G-')) {
+        setMeasurementId(saved)
+      }
+    })
   }, [])
 
   if (!measurementId) return null

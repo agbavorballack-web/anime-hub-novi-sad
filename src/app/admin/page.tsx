@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase, getAllSettings, setSetting } from '@/lib/supabase'
 import { 
   LayoutDashboard, 
   Users, 
@@ -105,41 +106,27 @@ export default function AdminDashboard() {
     purchaseTime: string
   }[]>([])
 
-  // Load ALL saved settings from localStorage on mount
+  // Load ALL saved settings from Supabase on mount
   useEffect(() => {
-    const savedPassword = localStorage.getItem('admin_password')
-    if (savedPassword) setAdminPassword(savedPassword)
+    async function loadSettings() {
+      const settings = await getAllSettings()
 
-    const savedWhatsapp = localStorage.getItem('setting_whatsapp')
-    if (savedWhatsapp) setWhatsappLink(savedWhatsapp)
+      if (settings['admin_password']) setAdminPassword(settings['admin_password'])
+      if (settings['whatsapp_link']) setWhatsappLink(settings['whatsapp_link'])
+      if (settings['instagram_link']) setInstagramLink(settings['instagram_link'])
+      if (settings['site_name']) setSiteName(settings['site_name'])
+      if (settings['site_email']) setSiteEmail(settings['site_email'])
+      if (settings['site_phone']) setPhoneNumber(settings['site_phone'])
+      if (settings['bank_name']) setBankName(settings['bank_name'])
+      if (settings['account_holder']) setAccountHolder(settings['account_holder'])
+      if (settings['account_number']) setAccountNumber(settings['account_number'])
+      if (settings['ga_id']) setGaId(settings['ga_id'])
+      if (settings['hero_image']) setHeroImage(settings['hero_image'])
+    }
 
-    const savedInstagram = localStorage.getItem('setting_instagram')
-    if (savedInstagram) setInstagramLink(savedInstagram)
+    loadSettings()
 
-    const savedSiteName = localStorage.getItem('setting_siteName')
-    if (savedSiteName) setSiteName(savedSiteName)
-
-    const savedEmail = localStorage.getItem('setting_email')
-    if (savedEmail) setSiteEmail(savedEmail)
-
-    const savedPhone = localStorage.getItem('setting_phone')
-    if (savedPhone) setPhoneNumber(savedPhone)
-
-    const savedBank = localStorage.getItem('setting_bankName')
-    if (savedBank) setBankName(savedBank)
-
-    const savedHolder = localStorage.getItem('setting_accountHolder')
-    if (savedHolder) setAccountHolder(savedHolder)
-
-    const savedAccount = localStorage.getItem('setting_accountNumber')
-    if (savedAccount) setAccountNumber(savedAccount)
-
-    const savedGaId = localStorage.getItem('setting_ga_id')
-    if (savedGaId) setGaId(savedGaId)
-
-    const savedHeroImage = localStorage.getItem('setting_hero_image')
-    if (savedHeroImage) setHeroImage(savedHeroImage)
-
+    // Keep localStorage for data that is not yet in Supabase
     const savedPurchases = localStorage.getItem('ticket_purchases')
     if (savedPurchases) setTicketPurchases(JSON.parse(savedPurchases))
 
@@ -196,18 +183,20 @@ export default function AdminDashboard() {
     localStorage.setItem('admin_events', JSON.stringify(updated))
   }
 
-  const handleSaveSettings = () => {
-    // Save everything to localStorage so it persists after refresh
-    localStorage.setItem('setting_whatsapp', whatsappLink)
-    localStorage.setItem('setting_instagram', instagramLink)
-    localStorage.setItem('setting_siteName', siteName)
-    localStorage.setItem('setting_email', siteEmail)
-    localStorage.setItem('setting_phone', phoneNumber)
-    localStorage.setItem('setting_bankName', bankName)
-    localStorage.setItem('setting_accountHolder', accountHolder)
-    localStorage.setItem('setting_accountNumber', accountNumber)
-    localStorage.setItem('setting_ga_id', gaId)
-    localStorage.setItem('setting_hero_image', heroImage)
+  const handleSaveSettings = async () => {
+    // Save everything to Supabase so it is visible to all visitors instantly
+    await Promise.all([
+      setSetting('whatsapp_link', whatsappLink),
+      setSetting('instagram_link', instagramLink),
+      setSetting('site_name', siteName),
+      setSetting('site_email', siteEmail),
+      setSetting('site_phone', phoneNumber),
+      setSetting('bank_name', bankName),
+      setSetting('account_holder', accountHolder),
+      setSetting('account_number', accountNumber),
+      setSetting('ga_id', gaId),
+      setSetting('hero_image', heroImage),
+    ])
     setSettingsSaved(true)
     setTimeout(() => setSettingsSaved(false), 3000)
   }
@@ -227,8 +216,8 @@ export default function AdminDashboard() {
       setPasswordMsg({ type: 'error', text: 'New passwords do not match.' })
       return
     }
-    // Save new password to localStorage so it persists after refresh
-    localStorage.setItem('admin_password', newPassword)
+    // Save new password to Supabase so it works on every browser/device
+    setSetting('admin_password', newPassword)
     setAdminPassword(newPassword)
     setCurrentPassword('')
     setNewPassword('')

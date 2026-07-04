@@ -1,16 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { getSetting } from '@/lib/supabase'
 import { User, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [siteEmail, setSiteEmail] = useState('animehubns@gmail.com')
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
+
+  useEffect(() => {
+    getSetting('site_email').then(email => {
+      if (email) setSiteEmail(email)
+    })
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -77,7 +85,7 @@ export default function LoginPage() {
                 <input type="checkbox" className="w-4 h-4 rounded border-dark-border bg-dark-bg text-neon-purple focus:ring-neon-purple" />
                 <span className="ml-2 text-sm text-gray-400">Remember me</span>
               </label>
-              <a href="mailto:animehubns@gmail.com?subject=Password Reset Request" className="text-sm text-neon-blue hover:text-neon-pink">
+              <a href={`mailto:${siteEmail}?subject=Password Reset Request`} className="text-sm text-neon-blue hover:text-neon-pink">
                 Forgot password?
               </a>
             </div>
