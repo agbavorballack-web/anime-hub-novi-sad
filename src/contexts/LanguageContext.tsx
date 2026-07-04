@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { Language, getTranslation } from '@/lib/i18n'
 
 interface LanguageContextType {
@@ -12,7 +12,19 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en')
+  const [language, setLanguageState] = useState<Language>('en')
+
+  useEffect(() => {
+    const saved = localStorage.getItem('site_language') as Language | null
+    if (saved && (saved === 'en' || saved === 'sr')) {
+      setLanguageState(saved)
+    }
+  }, [])
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang)
+    localStorage.setItem('site_language', lang)
+  }
 
   const t = (key: string) => getTranslation(language, key)
 

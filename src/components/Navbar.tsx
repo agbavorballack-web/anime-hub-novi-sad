@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   Menu, 
   X, 
@@ -16,6 +17,7 @@ import {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { language, setLanguage, t } = useLanguage()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,12 +28,16 @@ export default function Navbar() {
   }, [])
 
   const navItems = [
-    { href: '/', icon: Home, label: 'Home' },
-    { href: '/events', icon: Calendar, label: 'Events' },
-    { href: '/rewards', icon: Award, label: 'Rewards' },
-    { href: '/about', icon: Globe, label: 'About' },
-    { href: '/admin', icon: LayoutDashboard, label: 'Admin' },
+    { href: '/', icon: Home, labelKey: 'nav.home' },
+    { href: '/events', icon: Calendar, labelKey: 'nav.events' },
+    { href: '/rewards', icon: Award, labelKey: 'nav.rewards' },
+    { href: '/about', icon: Globe, labelKey: 'nav.about' },
+    { href: '/admin', icon: LayoutDashboard, labelKey: 'nav.admin' },
   ]
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'sr' : 'en')
+  }
 
   return (
     <motion.nav
@@ -62,15 +68,20 @@ export default function Navbar() {
                 className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-dark-card transition-all"
               >
                 <item.icon className="w-4 h-4" />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             ))}
           </div>
 
           {/* Right Section */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 rounded-lg hover:bg-dark-card transition-all">
-              <Globe className="w-5 h-5 text-gray-300" />
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-dark-card transition-all text-gray-300 hover:text-white"
+              aria-label="Toggle language"
+            >
+              <Globe className="w-5 h-5" />
+              <span className="text-sm font-medium uppercase">{language}</span>
             </button>
           </div>
 
@@ -102,13 +113,17 @@ export default function Navbar() {
                   className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-dark-bg transition-all"
                 >
                   <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+                  <span>{t(item.labelKey)}</span>
                 </Link>
               ))}
               <div className="pt-4 border-t border-dark-border flex items-center">
-                <button className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white">
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white"
+                  aria-label="Toggle language"
+                >
                   <Globe className="w-5 h-5" />
-                  <span>Language</span>
+                  <span className="font-medium uppercase">{language === 'en' ? 'English' : 'Srpski'}</span>
                 </button>
               </div>
             </div>

@@ -8,6 +8,8 @@ export const translations = {
       showcase: 'Showcase',
       news: 'News',
       rewards: 'Rewards',
+      about: 'About',
+      admin: 'Admin',
     },
     home: {
       title: 'Anime Hub Novi Sad',
@@ -80,6 +82,8 @@ export const translations = {
       showcase: 'Галерија',
       news: 'Вести',
       rewards: 'Награде',
+      about: 'О Нама',
+      admin: 'Админ',
     },
     home: {
       title: 'Аниме Хуб Нови Сад',
