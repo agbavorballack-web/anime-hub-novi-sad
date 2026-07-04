@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getSetting } from '@/lib/supabase'
+import { getSetting, getEvents, createTicketPurchase } from '@/lib/supabase'
 import { 
   Calendar, 
   Clock, 
@@ -47,6 +47,21 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
   const [accountNumber, setAccountNumber] = useState('')
   const [adminEmail, setAdminEmail] = useState('animehubns@gmail.com')
 
+  const [event, setEvent] = useState({
+    id: Number(params.id),
+    title: 'Community Launch Party',
+    description: 'Join us for our very first community meetup! Let\'s get to know each other, share our love for anime, and plan future events together. Food and drinks will be available.',
+    date: '2026-07-15',
+    time: '18:00',
+    endTime: '22:00',
+    location: 'To Be Announced (Join WhatsApp for updates)',
+    price: 500,
+    capacity: 50,
+    registered: 0,
+    organizer: 'Anime Hub Novi Sad',
+    image: 'https://images.unsplash.com/photo-1541562232579-512a21360020?w=1200',
+  })
+
   useEffect(() => {
     async function loadSettings() {
       const [b, h, n, ae] = await Promise.all([
@@ -60,23 +75,31 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
       if (n) setAccountNumber(n)
       if (ae) setAdminEmail(ae)
     }
-    loadSettings()
-  }, [])
 
-  const event = {
-    id: params.id,
-    title: 'Community Launch Party',
-    description: 'Join us for our very first community meetup! Let\'s get to know each other, share our love for anime, and plan future events together. Food and drinks will be available.',
-    date: '2026-07-15',
-    time: '18:00',
-    endTime: '22:00',
-    location: 'To Be Announced (Join WhatsApp for updates)',
-    price: 500,
-    capacity: 50,
-    registered: 0,
-    organizer: 'Anime Hub Novi Sad',
-    image: 'https://images.unsplash.com/photo-1541562232579-512a21360020?w=1200',
-  }
+    async function loadEvent() {
+      const events = await getEvents()
+      const found = events.find(e => e.id === Number(params.id))
+      if (found) {
+        setEvent({
+          id: found.id,
+          title: found.title,
+          description: found.description,
+          date: found.date,
+          time: found.time,
+          endTime: found.endTime,
+          location: found.location,
+          price: found.price,
+          capacity: found.capacity,
+          registered: found.registered,
+          organizer: 'Anime Hub Novi Sad',
+          image: found.image,
+        })
+      }
+    }
+
+    loadSettings()
+    loadEvent()
+  }, [params.id])
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
     `ANIMEHUB-TICKET|${bookingCode}|${event.title}|${event.date}|${name}`
@@ -137,9 +160,8 @@ Please verify the bank transfer before the event.
       const adminMailto = `mailto:${adminEmail}?subject=New Ticket Purchase - ${encodeURIComponent(event.title)}&body=${encodeURIComponent(adminEmailBody)}`
       window.open(adminMailto, '_blank')
 
-      // Save purchase to localStorage for admin records
-      const purchases = JSON.parse(localStorage.getItem('ticket_purchases') || '[]')
-      purchases.push({
+      // Save purchase to Supabase so admin can see it on any device
+      await createTicketPurchase({
         bookingCode,
         name,
         email,
@@ -148,7 +170,6 @@ Please verify the bank transfer before the event.
         amount: event.price,
         purchaseTime: new Date().toISOString()
       })
-      localStorage.setItem('ticket_purchases', JSON.stringify(purchases))
 
       // Award +50 points per ticket purchase to rewards system
       const currentPoints: number = JSON.parse(localStorage.getItem('rewards_points') || '0')

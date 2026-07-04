@@ -129,17 +129,28 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const saved = localStorage.getItem('admin_events')
-    if (saved) {
-      const adminEvents: typeof DEFAULT_EVENT[] = JSON.parse(saved)
+    async function loadEvents() {
+      const { getEvents } = await import('@/lib/supabase')
+      const supabaseEvents = await getEvents()
       const now = new Date().toISOString().split('T')[0]
-      const upcoming = adminEvents
+      const upcoming = supabaseEvents
         .filter(e => e.date >= now)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       // Total = default (1) + admin created
-      setEventCount(1 + adminEvents.length)
-      if (upcoming.length > 0) setNextEvent(upcoming[0])
+      setEventCount(1 + supabaseEvents.length)
+      if (upcoming.length > 0) {
+        setNextEvent({
+          id: upcoming[0].id,
+          title: upcoming[0].title,
+          date: upcoming[0].date,
+          time: upcoming[0].time,
+          location: upcoming[0].location,
+          price: upcoming[0].price,
+          image: upcoming[0].image,
+        })
+      }
     }
+    loadEvents()
   }, [])
 
   const countdown = useCountdown(nextEvent.date)

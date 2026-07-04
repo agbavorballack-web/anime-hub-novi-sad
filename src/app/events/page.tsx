@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getEvents } from '@/lib/supabase'
 import { Calendar, Clock, MapPin, Users, Ticket, Search, Heart } from 'lucide-react'
 import Link from 'next/link'
 
@@ -122,16 +123,17 @@ export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [events, setEvents] = useState(DEFAULT_EVENTS)
 
-  // Load admin-created events from localStorage and merge with defaults
+  // Load events from Supabase (admin-created + default)
   useEffect(() => {
-    const saved = localStorage.getItem('admin_events')
-    if (saved) {
-      const adminEvents = JSON.parse(saved).map((e: typeof events[0]) => ({ ...e, registered: 0 }))
-      // Merge: default first, then admin events (no duplicates by id)
-      const adminIds = new Set(adminEvents.map((e: typeof events[0]) => e.id))
-      const base = DEFAULT_EVENTS.filter(e => !adminIds.has(e.id))
-      setEvents([...base, ...adminEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()))
+    async function loadEvents() {
+      const supabaseEvents = await getEvents()
+      if (supabaseEvents.length > 0) {
+        const adminIds = new Set(supabaseEvents.map(e => e.id))
+        const base = DEFAULT_EVENTS.filter(e => !adminIds.has(e.id))
+        setEvents([...base, ...supabaseEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()))
+      }
     }
+    loadEvents()
   }, [])
 
   const categories = [

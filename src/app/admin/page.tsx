@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase, getAllSettings, setSetting } from '@/lib/supabase'
+import {
+  getAllSettings,
+  setSetting,
+  getAnnouncements,
+  createAnnouncement,
+  deleteAnnouncement,
+  getEvents,
+  createEvent,
+  deleteEvent,
+  getTicketPurchases,
+  Announcement,
+  AdminEvent,
+  TicketPurchase,
+} from '@/lib/supabase'
 import { 
   LayoutDashboard, 
   Users, 
@@ -108,7 +121,7 @@ export default function AdminDashboard() {
 
   // Load ALL saved settings from Supabase on mount
   useEffect(() => {
-    async function loadSettings() {
+    async function loadData() {
       const settings = await getAllSettings()
 
       if (settings['admin_password']) setAdminPassword(settings['admin_password'])
@@ -122,16 +135,18 @@ export default function AdminDashboard() {
       if (settings['account_number']) setAccountNumber(settings['account_number'])
       if (settings['ga_id']) setGaId(settings['ga_id'])
       if (settings['hero_image']) setHeroImage(settings['hero_image'])
+
+      const loadedAnnouncements = await getAnnouncements()
+      if (loadedAnnouncements.length > 0) setAnnouncements(loadedAnnouncements)
+
+      const loadedEvents = await getEvents()
+      if (loadedEvents.length > 0) setAdminEvents(loadedEvents)
+
+      const loadedPurchases = await getTicketPurchases()
+      if (loadedPurchases.length > 0) setTicketPurchases(loadedPurchases)
     }
 
-    loadSettings()
-
-    // Keep localStorage for data that is not yet in Supabase
-    const savedPurchases = localStorage.getItem('ticket_purchases')
-    if (savedPurchases) setTicketPurchases(JSON.parse(savedPurchases))
-
-    const savedEvents = localStorage.getItem('admin_events')
-    if (savedEvents) setAdminEvents(JSON.parse(savedEvents))
+    loadData()
   }, [])
 
   const tabs = [
@@ -146,41 +161,41 @@ export default function AdminDashboard() {
 
 
 
-  const handlePublishAnnouncement = () => {
+  const handlePublishAnnouncement = async () => {
     if (newAnnouncement.title && newAnnouncement.content) {
-      setAnnouncements([
-        {
-          id: Date.now(),
-          title: newAnnouncement.title,
-          content: newAnnouncement.content,
-          date: new Date().toISOString().split('T')[0],
-          published: true
-        },
-        ...announcements
-      ])
+      const announcement: Announcement = {
+        id: Date.now(),
+        title: newAnnouncement.title,
+        content: newAnnouncement.content,
+        date: new Date().toISOString().split('T')[0],
+        published: true
+      }
+      await createAnnouncement(announcement)
+      setAnnouncements([announcement, ...announcements])
       setNewAnnouncement({ title: '', content: '' })
     }
   }
 
-  const handleDeleteAnnouncement = (id: number) => {
+  const handleDeleteAnnouncement = async (id: number) => {
+    await deleteAnnouncement(id)
     setAnnouncements(announcements.filter(a => a.id !== id))
   }
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     if (!newEvent.title || !newEvent.date) return
-    const event = { ...newEvent, id: Date.now() }
+    const event: AdminEvent = { ...newEvent, id: Date.now(), registered: 0 }
+    await createEvent(event)
     const updated = [...adminEvents, event]
     setAdminEvents(updated)
-    localStorage.setItem('admin_events', JSON.stringify(updated))
     setNewEvent({ title: '', description: '', date: '', time: '18:00', endTime: '22:00', location: '', price: 0, capacity: 50, category: 'meetup', image: 'https://images.unsplash.com/photo-1541562232579-512a21360020?w=600' })
     setEventSaved(true)
     setTimeout(() => setEventSaved(false), 3000)
   }
 
-  const handleDeleteEvent = (id: number) => {
+  const handleDeleteEvent = async (id: number) => {
+    await deleteEvent(id)
     const updated = adminEvents.filter(e => e.id !== id)
     setAdminEvents(updated)
-    localStorage.setItem('admin_events', JSON.stringify(updated))
   }
 
   const handleSaveSettings = async () => {
