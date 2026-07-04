@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { getEvents } from '@/lib/supabase'
 import { Calendar, Clock, MapPin, Users, Ticket, Search, Heart } from 'lucide-react'
 import Link from 'next/link'
@@ -119,6 +120,7 @@ const DEFAULT_EVENTS = [
 ]
 
 export default function EventsPage() {
+  const { language, t } = useLanguage()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [events, setEvents] = useState(DEFAULT_EVENTS)
@@ -137,8 +139,8 @@ export default function EventsPage() {
   }, [])
 
   const categories = [
-    { id: 'all', label: 'All Events' },
-    { id: 'meetup', label: 'Meetups' },
+    { id: 'all', label: t('events.allEvents') },
+    { id: 'meetup', label: t('events.meetups') },
   ]
 
   const filteredEvents = events.filter(event => {
@@ -157,9 +159,9 @@ export default function EventsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-bold gradient-text mb-4">Upcoming Events</h1>
+          <h1 className="text-5xl font-bold gradient-text mb-4">{t('events.title')}</h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Join our exciting anime events in Novi Sad and connect with fellow enthusiasts!
+            {t('events.subtitle')}
           </p>
         </motion.div>
 
@@ -170,7 +172,7 @@ export default function EventsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
                 type="text"
-                placeholder="Search events..."
+                placeholder={t('events.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-dark-bg border border-dark-border rounded-lg focus:ring-2 focus:ring-neon-purple text-white"
@@ -206,7 +208,7 @@ export default function EventsPage() {
             >
               <div className="h-48 bg-cover bg-center relative" style={{ backgroundImage: `url(${event.image})` }}>
                 <div className="absolute top-4 right-4 bg-neon-purple px-3 py-1 rounded-full text-sm font-medium">
-                  {event.price === 0 ? 'Free' : `${event.price} RSD`}
+                  {event.price === 0 ? t('events.free') : `${event.price} RSD`}
                 </div>
               </div>
 
@@ -217,7 +219,7 @@ export default function EventsPage() {
                 <div className="space-y-2 text-sm text-gray-400 mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-neon-pink" />
-                    {new Date(event.date).toLocaleDateString('en-US', {
+                    {new Date(event.date).toLocaleDateString(language === 'sr' ? 'sr-RS' : 'en-US', {
                       weekday: 'short',
                       month: 'short',
                       day: 'numeric',
@@ -234,7 +236,7 @@ export default function EventsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-neon-green" />
-                    {event.registered}/{event.capacity} registered
+                    {event.registered}/{event.capacity} {t('events.registered')}
                   </div>
                 </div>
 
@@ -250,7 +252,7 @@ export default function EventsPage() {
                   <LikeButton eventId={event.id} />
                   <Link href={`/events/${event.id}`} className="btn-primary flex-1 text-center">
                     <Ticket className="inline mr-2 w-4 h-4" />
-                    Get Tickets
+                    {t('events.getTickets')}
                   </Link>
                 </div>
               </div>
@@ -261,7 +263,7 @@ export default function EventsPage() {
         {filteredEvents.length === 0 && (
           <div className="text-center py-12">
             <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-            <p className="text-gray-400 text-lg">No events found matching your search.</p>
+            <p className="text-gray-400 text-lg">{t('events.noEvents')}</p>
           </div>
         )}
       </div>

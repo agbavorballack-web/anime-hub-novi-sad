@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Link from 'next/link'
 import {
   Award,
@@ -115,6 +116,7 @@ const LEVELS = [
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function RewardsPage() {
+  const { t } = useLanguage()
   const [ticketCount, setTicketCount] = useState(0)
   const [completedIds, setCompletedIds] = useState<number[]>([])
   const [totalPoints, setTotalPoints] = useState(0)
@@ -199,8 +201,8 @@ export default function RewardsPage() {
             >
               <PartyPopper className="w-6 h-6 flex-shrink-0" />
               <div>
-                <p className="font-bold">Achievement Unlocked: {toast.title}!</p>
-                <p className="text-sm opacity-90">+{toast.points} points added to your profile</p>
+                <p className="font-bold">{t('rewards.achievementUnlocked')}: {toast.title}!</p>
+                <p className="text-sm opacity-90">+{toast.points} {t('rewards.pointsAdded')}</p>
               </div>
               <button onClick={() => setToast(null)} className="ml-2 opacity-70 hover:opacity-100">
                 <X className="w-4 h-4" />
@@ -215,9 +217,9 @@ export default function RewardsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-bold gradient-text mb-4">Rewards & Achievements</h1>
+          <h1 className="text-5xl font-bold gradient-text mb-4">{t('rewards.title')}</h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Every ticket you buy and friend you bring unlocks real rewards. Take action — the points are yours.
+            {t('rewards.subtitle')}
           </p>
         </motion.div>
 
@@ -231,19 +233,19 @@ export default function RewardsPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-5xl font-bold gradient-text mb-2">{totalPoints}</div>
-              <div className="text-gray-400">Total Points</div>
+              <div className="text-gray-400">{t('rewards.totalPoints')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-neon-purple mb-2">{currentLevel.name}</div>
-              <div className="text-gray-400">Current Rank</div>
+              <div className="text-gray-400">{t('rewards.currentRank')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-neon-pink mb-2">{ticketCount}</div>
-              <div className="text-gray-400">Tickets Purchased</div>
+              <div className="text-gray-400">{t('rewards.ticketsPurchased')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-400 mb-2">{completedCount}/{ACHIEVEMENTS.length}</div>
-              <div className="text-gray-400">Achievements Unlocked</div>
+              <div className="text-gray-400">{t('rewards.achievementsUnlocked')}</div>
             </div>
           </div>
 
@@ -251,7 +253,7 @@ export default function RewardsPage() {
           {nextLevel && (
             <div className="mt-8">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-400">Progress to <span className="text-white font-semibold">{nextLevel.name}</span></span>
+                <span className="text-gray-400">{t('rewards.progressTo')} <span className="text-white font-semibold">{nextLevel.name}</span></span>
                 <span className="text-neon-purple">{Math.round(progressToNext)}%</span>
               </div>
               <div className="w-full bg-dark-border rounded-full h-4 overflow-hidden">
@@ -277,7 +279,7 @@ export default function RewardsPage() {
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold mb-6">Achievements</h2>
+          <h2 className="text-2xl font-bold mb-6">{t('rewards.achievements')}</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {ACHIEVEMENTS.map((achievement) => {
               const isCompleted = completedIds.includes(achievement.id)
@@ -318,7 +320,7 @@ export default function RewardsPage() {
                         {isTicket && !isCompleted && (
                           <div className="mb-3">
                             <div className="flex justify-between text-xs text-gray-500 mb-1">
-                              <span>{progress}/{achievement.threshold} tickets</span>
+                              <span>{progress}/{achievement.threshold} {t('rewards.tickets')}</span>
                             </div>
                             <div className="w-full bg-dark-border rounded-full h-2">
                               <div
@@ -332,7 +334,7 @@ export default function RewardsPage() {
                         {/* Status / Action */}
                         {isCompleted ? (
                           <span className="inline-flex items-center gap-1 bg-neon-purple/20 text-neon-purple text-xs px-3 py-1.5 rounded-full font-semibold">
-                            <CheckCircle className="w-3 h-3" /> Unlocked
+                            <CheckCircle className="w-3 h-3" /> {t('rewards.unlocked')}
                           </span>
                         ) : isReferral ? (
                           <button
@@ -340,7 +342,7 @@ export default function RewardsPage() {
                             className="btn-primary text-sm flex items-center gap-2 py-2 px-4"
                           >
                             <Share2 className="w-4 h-4" />
-                            Share on WhatsApp
+                            {t('rewards.shareWhatsapp')}
                           </button>
                         ) : (
                           <div className="flex items-center gap-2">
@@ -355,7 +357,7 @@ export default function RewardsPage() {
                               onClick={() => setActiveHint(showHint ? null : achievement.id)}
                               className="text-gray-500 hover:text-gray-300 text-xs underline"
                             >
-                              How?
+                              {t('rewards.how')}
                             </button>
                           </div>
                         )}
@@ -392,7 +394,7 @@ export default function RewardsPage() {
           transition={{ delay: 0.3 }}
           className="mb-8"
         >
-          <h2 className="text-2xl font-bold mb-6">How Points Work</h2>
+          <h2 className="text-2xl font-bold mb-6">{t('rewards.howPointsWork')}</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { icon: Ticket, title: 'Buy a Ticket', points: '+50 per ticket', desc: 'Points are added automatically every time you buy a ticket.' },
@@ -416,7 +418,7 @@ export default function RewardsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h2 className="text-2xl font-bold mb-6">Rank Levels</h2>
+          <h2 className="text-2xl font-bold mb-6">{t('rewards.rankLevels')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {LEVELS.map((level) => {
               const isUnlocked = totalPoints >= level.points
@@ -429,8 +431,8 @@ export default function RewardsPage() {
                 >
                   <level.icon className={`w-8 h-8 mx-auto mb-2 ${isUnlocked ? 'text-neon-purple' : 'text-gray-600'}`} />
                   <div className={`font-bold text-sm mb-1 ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>{level.name}</div>
-                  <div className="text-xs text-gray-500">{level.points.toLocaleString()} pts</div>
-                  {isUnlocked && <div className="text-xs text-neon-purple mt-1 font-semibold">✓ Unlocked</div>}
+                  <div className="text-xs text-gray-500">{level.points.toLocaleString()} {t('rewards.pts')}</div>
+                  {isUnlocked && <div className="text-xs text-neon-purple mt-1 font-semibold">✓ {t('rewards.unlocked')}</div>}
                 </div>
               )
             })}

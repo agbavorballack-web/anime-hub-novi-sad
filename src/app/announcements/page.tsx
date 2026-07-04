@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Megaphone, Calendar } from 'lucide-react'
 import { getAnnouncements, Announcement } from '@/lib/supabase'
 
 export default function AnnouncementsPage() {
+  const { language, t } = useLanguage()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -27,8 +29,8 @@ export default function AnnouncementsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-bold gradient-text mb-4">Announcements</h1>
-          <p className="text-gray-400 text-lg">Latest news and updates from Anime Hub Novi Sad</p>
+          <h1 className="text-5xl font-bold gradient-text mb-4">{t('announcements.title')}</h1>
+          <p className="text-gray-400 text-lg">{t('announcements.subtitle')}</p>
         </motion.div>
 
         {/* Loading */}
@@ -42,7 +44,7 @@ export default function AnnouncementsPage() {
         {!loading && announcements.length === 0 && (
           <div className="text-center py-12 bg-dark-card rounded-2xl border border-dark-border">
             <Megaphone className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-            <p className="text-gray-400 text-lg">No announcements yet.</p>
+            <p className="text-gray-400 text-lg">{t('announcements.empty')}</p>
           </div>
         )}
 
@@ -60,7 +62,7 @@ export default function AnnouncementsPage() {
                   <Megaphone className="w-6 h-6 text-neon-purple" />
                   <span className="text-sm text-gray-400 flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {new Date(announcement.date).toLocaleDateString('en-US', {
+                    {new Date(announcement.date).toLocaleDateString(language === 'sr' ? 'sr-RS' : 'en-US', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
